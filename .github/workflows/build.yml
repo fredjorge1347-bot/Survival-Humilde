@@ -15,12 +15,93 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Baixar codigo fonte
-        run: |
-          curl -L "https://cdn.claude.ai/api/organizations/files/SurvivalHumilde-src.zip" -o src.zip || true
-          wget -O projeto.zip "https://github.com/fredjorge1347-bot/Survival-Humilde/releases/download/v1/SurvivalHumilde-src.zip" || true
+      - name: Extrair ZIP
+        run: unzip SurvivalHumilde-src.zip
 
-      - name: Montar estrutura do projeto
+      - name: Corrigir VaultHook
         run: |
-          mkdir -p src/main/java/com/survivalhumilde/{commands,economy,games,listeners,managers}
-          mkdir -p src/main/resources
+          cat > SurvivalHumilde/src/main/java/com/survivalhumilde/economy/VaultHook.java << 'EOF'
+          package com.survivalhumilde.economy;
+          import com.survivalhumilde.Main;
+          import net.milkbowl.vault.economy.Economy;
+          import net.milkbowl.vault.economy.EconomyResponse;
+          import org.bukkit.OfflinePlayer;
+          import org.bukkit.plugin.ServicePriority;
+          import java.util.Collections;
+          import java.util.List;
+          public class VaultHook implements Economy {
+              private final Main plugin;
+              private final SurvivalEconomy eco;
+              private boolean registered = false;
+              public VaultHook(Main plugin, SurvivalEconomy eco) { this.plugin = plugin; this.eco = eco; }
+              public boolean setup() {
+                  if (plugin.getServer().getPluginManager().getPlugin("Vault") == null) return false;
+                  plugin.getServer().getServicesManager().register(Economy.class, this, plugin, ServicePriority.High);
+                  registered = true; return true;
+              }
+              public void unregister() {
+                  if (registered) plugin.getServer().getServicesManager().unregister(Economy.class, this);
+              }
+              @Override public boolean isEnabled() { return true; }
+              @Override public String getName() { return "SurvivalHumilde"; }
+              @Override public boolean hasBankSupport() { return false; }
+              @Override public int fractionalDigits() { return 2; }
+              @Override public String format(double amount) { return eco.format(amount); }
+              @Override public String currencyNamePlural() { return eco.getCurrencyNamePlural(); }
+              @Override public String currencyNameSingular() { return eco.getCurrencyName(); }
+              @Override public boolean hasAccount(OfflinePlayer p) { return true; }
+              @Override public boolean hasAccount(OfflinePlayer p, String w) { return true; }
+              @Override public boolean createPlayerAccount(OfflinePlayer p) { return true; }
+              @Override public boolean createPlayerAccount(OfflinePlayer p, String w) { return true; }
+              @Override public double getBalance(OfflinePlayer p) { return eco.getBalance(p); }
+              @Override public double getBalance(OfflinePlayer p, String w) { return eco.getBalance(p); }
+              @Override public boolean has(OfflinePlayer p, double a) { return eco.has(p, a); }
+              @Override public boolean has(OfflinePlayer p, String w, double a) { return eco.has(p, a); }
+              @Override public EconomyResponse withdrawPlayer(OfflinePlayer p, double a) {
+                  if (a < 0) return fail(p, "Valor negativo.");
+                  if (!eco.has(p, a)) return fail(p, "Saldo insuficiente.");
+                  eco.withdraw(p, a); return success(p, a);
+              }
+              @Override public EconomyResponse withdrawPlayer(OfflinePlayer p, String w, double a) { return withdrawPlayer(p, a); }
+              @Override public EconomyResponse depositPlayer(OfflinePlayer p, double a) {
+                  if (a < 0) return fail(p, "Valor negativo.");
+                  eco.deposit(p, a); return success(p, a);
+              }
+              @Override public EconomyResponse depositPlayer(OfflinePlayer p, String w, double a) { return depositPlayer(p, a); }
+              private static final EconomyResponse NO_BANK = new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Sem bancos.");
+              @Override public EconomyResponse createBank(String n, OfflinePlayer p) { return NO_BANK; }
+              @Override public EconomyResponse deleteBank(String n) { return NO_BANK; }
+              @Override public EconomyResponse bankBalance(String n) { return NO_BANK; }
+              @Override public EconomyResponse bankHas(String n, double a) { return NO_BANK; }
+              @Override public EconomyResponse bankWithdraw(String n, double a) { return NO_BANK; }
+              @Override public EconomyResponse bankDeposit(String n, double a) { return NO_BANK; }
+              @Override public EconomyResponse isBankOwner(String n, OfflinePlayer p) { return NO_BANK; }
+              @Override public EconomyResponse isBankMember(String n, OfflinePlayer p) { return NO_BANK; }
+              @Override public List<String> getBanks() { return Collections.emptyList(); }
+              @Override @Deprecated public boolean hasAccount(String p) { return true; }
+              @Override @Deprecated public boolean hasAccount(String p, String w) { return true; }
+              @Override @Deprecated public boolean createPlayerAccount(String p) { return true; }
+              @Override @Deprecated public boolean createPlayerAccount(String p, String w) { return true; }
+              @Override @Deprecated public double getBalance(String p) { return 0; }
+              @Override @Deprecated public double getBalance(String p, String w) { return 0; }
+              @Override @Deprecated public boolean has(String p, double a) { return false; }
+              @Override @Deprecated public boolean has(String p, String w, double a) { return false; }
+              @Override @Deprecated public EconomyResponse withdrawPlayer(String p, double a) { return NO_BANK; }
+              @Override @Deprecated public EconomyResponse withdrawPlayer(String p, String w, double a) { return NO_BANK; }
+              @Override @Deprecated public EconomyResponse depositPlayer(String p, double a) { return NO_BANK; }
+              @Override @Deprecated public EconomyResponse depositPlayer(String p, String w, double a) { return NO_BANK; }
+              @Override @Deprecated public EconomyResponse isBankOwner(String n, String p) { return NO_BANK; }
+              @Override @Deprecated public EconomyResponse isBankMember(String n, String p) { return NO_BANK; }
+              private EconomyResponse success(OfflinePlayer p, double a) { return new EconomyResponse(a, eco.getBalance(p), EconomyResponse.ResponseType.SUCCESS, ""); }
+              private EconomyResponse fail(OfflinePlayer p, String m) { return new EconomyResponse(0, eco.getBalance(p), EconomyResponse.ResponseType.FAILURE, m); }
+          }
+          EOF
+
+      - name: Compilar
+        run: cd SurvivalHumilde && mvn package -B
+
+      - name: Salvar .jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: SurvivalHumilde
+          path: SurvivalHumilde/target/SurvivalHumilde.jar
