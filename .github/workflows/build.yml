@@ -20,7 +20,7 @@ jobs:
 
       - name: Corrigir VaultHook
         run: |
-          cat > SurvivalHumilde/src/main/java/com/survivalhumilde/economy/VaultHook.java << 'EOF'
+          cat > SurvivalHumilde/src/main/java/com/survivalhumilde/economy/VaultHook.java << 'JAVAEOF'
           package com.survivalhumilde.economy;
           import com.survivalhumilde.Main;
           import net.milkbowl.vault.economy.Economy;
@@ -70,13 +70,16 @@ jobs:
               @Override public EconomyResponse depositPlayer(OfflinePlayer p, String w, double a) { return depositPlayer(p, a); }
               private static final EconomyResponse NO_BANK = new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "Sem bancos.");
               @Override public EconomyResponse createBank(String n, OfflinePlayer p) { return NO_BANK; }
+              @Override public EconomyResponse createBank(String n, String p) { return NO_BANK; }
               @Override public EconomyResponse deleteBank(String n) { return NO_BANK; }
               @Override public EconomyResponse bankBalance(String n) { return NO_BANK; }
               @Override public EconomyResponse bankHas(String n, double a) { return NO_BANK; }
               @Override public EconomyResponse bankWithdraw(String n, double a) { return NO_BANK; }
               @Override public EconomyResponse bankDeposit(String n, double a) { return NO_BANK; }
               @Override public EconomyResponse isBankOwner(String n, OfflinePlayer p) { return NO_BANK; }
+              @Override public EconomyResponse isBankOwner(String n, String p) { return NO_BANK; }
               @Override public EconomyResponse isBankMember(String n, OfflinePlayer p) { return NO_BANK; }
+              @Override public EconomyResponse isBankMember(String n, String p) { return NO_BANK; }
               @Override public List<String> getBanks() { return Collections.emptyList(); }
               @Override @Deprecated public boolean hasAccount(String p) { return true; }
               @Override @Deprecated public boolean hasAccount(String p, String w) { return true; }
@@ -90,12 +93,10 @@ jobs:
               @Override @Deprecated public EconomyResponse withdrawPlayer(String p, String w, double a) { return NO_BANK; }
               @Override @Deprecated public EconomyResponse depositPlayer(String p, double a) { return NO_BANK; }
               @Override @Deprecated public EconomyResponse depositPlayer(String p, String w, double a) { return NO_BANK; }
-              @Override @Deprecated public EconomyResponse isBankOwner(String n, String p) { return NO_BANK; }
-              @Override @Deprecated public EconomyResponse isBankMember(String n, String p) { return NO_BANK; }
               private EconomyResponse success(OfflinePlayer p, double a) { return new EconomyResponse(a, eco.getBalance(p), EconomyResponse.ResponseType.SUCCESS, ""); }
               private EconomyResponse fail(OfflinePlayer p, String m) { return new EconomyResponse(0, eco.getBalance(p), EconomyResponse.ResponseType.FAILURE, m); }
           }
-          EOF
+          JAVAEOF
 
       - name: Compilar
         run: cd SurvivalHumilde && mvn package -B
