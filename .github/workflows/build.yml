@@ -98,6 +98,10 @@ jobs:
           }
           JAVAEOF
 
+      - name: Corrigir materiais
+        run: |
+          sed -i 's/COOKED_FISH/COOKED_COD/g' SurvivalHumilde/src/main/java/com/survivalhumilde/shop/ShopManager.java
+
       - name: Compilar
         run: cd SurvivalHumilde && mvn package -B
 
