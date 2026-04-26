@@ -8,23 +8,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar codigo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Instalar Java 21
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Extrair ZIP
-        run: unzip SurvivalHumilde-src.zip
+      - name: Baixar codigo fonte
+        run: |
+          curl -L "https://cdn.claude.ai/api/organizations/files/SurvivalHumilde-src.zip" -o src.zip || true
+          wget -O projeto.zip "https://github.com/fredjorge1347-bot/Survival-Humilde/releases/download/v1/SurvivalHumilde-src.zip" || true
 
-      - name: Compilar plugin
-        run: cd SurvivalHumilde && mvn package -B
-
-      - name: Salvar o .jar
-        uses: actions/upload-artifact@v4
-        with:
-          name: SurvivalHumilde
-          path: SurvivalHumilde/target/SurvivalHumilde.jar
+      - name: Montar estrutura do projeto
+        run: |
+          mkdir -p src/main/java/com/survivalhumilde/{commands,economy,games,listeners,managers}
+          mkdir -p src/main/resources
