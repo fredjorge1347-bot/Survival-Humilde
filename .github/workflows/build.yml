@@ -13,6 +13,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Extrair ZIP
+        run: unzip SurvivalHumilde-src-v4-fixed.zip
+
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
