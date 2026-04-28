@@ -16,7 +16,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Extrair ZIP
-        run: unzip SurvivalHumilde-src 4.zip
+        run: unzip SurvivalHumilde-src-4.zip
 
       - name: Corrigir VaultHook
         run: |
