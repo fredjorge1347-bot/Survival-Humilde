@@ -9,15 +9,3 @@
   with:
     name: SurvivalPlus
     path: MecanicasNovas/target/SurvivalPlus.jar
-          key: ${{ runner.os }}-maven-${{ hashFiles('v4/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Build com Maven
-        run: mvn package -f v4/pom.xml -q
-
-      - name: Upload JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: SurvivalHumilde
-          path: v4/target/SurvivalHumilde.jar
