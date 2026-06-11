@@ -1,11 +1,36 @@
-- name: Extrair ZIP
-  run: unzip MecanicasNovas-src.zip
+name: Build Minecraft Plugin
 
-- name: Compilar
-  run: cd MecanicasNovas && mvn package -B
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
-- name: Salvar .jar
-  uses: actions/upload-artifact@v4
-  with:
-    name: SurvivalPlus
-    path: MecanicasNovas/target/SurvivalPlus.jar
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Faz o download do código do repositório para a máquina virtual
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # 2. Configura o Java 21 (Obrigatório para servidores 1.21.4)
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    # 3. Compila o código usando o Maven e gera o arquivo .jar limpo
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    # 4. Disponibiliza o arquivo final para você baixar no painel do GitHub
+    - name: Upload Plugin JAR
+      uses: actions/upload-artifact@v4
+      with:
+        name: SurvivalPlugin-Jar
+        path: target/*.jar
+        
