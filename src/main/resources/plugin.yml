@@ -1,0 +1,9 @@
+No conteúdo do arquivo, cole isto:
+   ```yaml
+   name: SurvivalMinigames
+   version: 1.0.0
+   main: minigames.Main
+   api-version: 1.21
+   description: Plugin de Minigames, Economia e Missoes para o Survival
+   author: Fred
+   depend: [Vault]
