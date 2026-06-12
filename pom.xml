@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+                <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Altere se quiser mudar o nome do plugin que aparece no servidor -->
-    <groupId>com.survivalamigos</groupId>
-    <artifactId>SurvivalHumilde</artifactId>
+    <!-- Mudamos a raiz do projeto aqui -->
+    <groupId>com.minigames</groupId>
+    <artifactId>SurvivalMinigames</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>SurvivalHumilde</name>
+    <name>SurvivalMinigames</name>
 
     <properties>
         <java.version>21</java.version>
@@ -18,12 +18,10 @@
     </properties>
 
     <repositories>
-        <!-- Repositorio do Paper/Spigot 1.21.4 -->
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <!-- Repositorio do Vault (para a economia) -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
@@ -31,14 +29,12 @@
     </repositories>
 
     <dependencies>
-        <!-- API do Paper 1.21.4 -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- API do Vault -->
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
@@ -48,6 +44,7 @@
     </dependencies>
 
     <build>
+        <finalName>SurvivalMinigames</finalName>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>
@@ -65,7 +62,6 @@
                 <version>3.3.0</version>
             </plugin>
         </plugins>
-        <!-- Garante que o arquivo plugin.yml seja copiado para dentro do jar -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -74,4 +70,3 @@
         </resources>
     </build>
 </project>
-          
