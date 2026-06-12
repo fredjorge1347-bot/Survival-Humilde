@@ -1,1 +1,1 @@
-java package minigames;
+package minigames;
