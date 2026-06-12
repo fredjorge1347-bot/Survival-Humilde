@@ -22,11 +22,11 @@ jobs:
         cache: 'maven'
 
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      # Força o Maven a usar o pom.xml que está exatamente na raiz principal
+      run: mvn -B package -f ./pom.xml
 
     - name: Upload Plugin JAR
       uses: actions/upload-artifact@v4
       with:
         name: SurvivalMinigames-Jar
         path: target/*.jar
-        
